@@ -173,7 +173,7 @@ static int stringInExtensionString(const char* string, const char* exts)
   return GL_TRUE;
 }
 
-#ifdef WIN32
+#if defined(WIN32) && ! defined(GLFW_WIN_CONTEXT)
 
 //////////////////////////////////////////////////////////////////////////
 // WIN 32
@@ -474,7 +474,8 @@ void ContextWindow::swapBuffers()
 {
   SwapBuffers(m_internal->m_hDC);
 }
-#else
+
+#else // defined(WIN32) && ! defined(GLFW_WIN_CONTEXT)
 
 struct ContextWindowInternalGL
 {
@@ -543,7 +544,11 @@ int ContextWindow::extensionSupported(const char* name)
   }
 
   // Check platform specifc gets
+#if ! defined(WIN32)
   const char* exts = glXQueryExtensionsString(glfwGetX11Display(), 0);
+#else
+  const char* exts =  nullptr;
+#endif // defined(WIN32)
 
   if(!exts)
   {
